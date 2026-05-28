@@ -1,32 +1,13 @@
 import React from "react";
-import type { CartItem, Product } from "../App";
+import { useCartStore } from "../store/cartStore";
+import type { Product } from "../store/cartStore";
 
 type ProductListProps = {
   products: Product[];
-  cart: CartItem[];
-  setCart: React.Dispatch<React.SetStateAction<CartItem[]>>;
 };
 
-const ProductList: React.FC<ProductListProps> = ({
-  products,
-  cart,
-  setCart,
-}) => {
-  const handleAddToCart = (product: Product) => {
-    const itemInCart = cart.find((item) => item.id === product.id);
-
-    if (itemInCart) {
-      setCart((prev) =>
-        prev.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item,
-        ),
-      );
-    } else {
-      setCart((prev) => [...prev, { ...product, quantity: 1 }]);
-    }
-  };
+const ProductList: React.FC<ProductListProps> = ({ products }) => {
+  const { addToCart } = useCartStore();
 
   return (
     <div>
@@ -36,9 +17,9 @@ const ProductList: React.FC<ProductListProps> = ({
 
           <p>{product.description}</p>
 
-          <p>${product.price.toFixed(2)}</p>
+          <p>£{product.price.toFixed(2)}</p>
 
-          <button onClick={() => handleAddToCart(product)}>Add to Cart</button>
+          <button onClick={() => addToCart(product)}>Add to Cart</button>
         </div>
       ))}
     </div>

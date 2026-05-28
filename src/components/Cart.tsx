@@ -1,12 +1,15 @@
 import React from "react";
-import type { CartItem, Product } from "../App";
+import { useCartStore } from "../store/cartStore";
 
-type CartProps = {
-  cart: CartItem[];
-  setCart: React.Dispatch<React.SetStateAction<CartItem[]>>;
-};
+type CartProps = {};
 
-const Cart: React.FC<CartProps> = ({ cart, setCart }) => {
+const Cart: React.FC<CartProps> = ({}) => {
+  const { cart, removeFromCart, updateQuantity, clearCart } = useCartStore();
+
+  const cartTotal = cart
+    .reduce((total, item) => total + item.price * item.quantity, 0)
+    .toFixed(2);
+
   return (
     <div>
       <h3>Cart</h3>
@@ -21,15 +24,26 @@ const Cart: React.FC<CartProps> = ({ cart, setCart }) => {
 
               <p>{product.description}</p>
 
-              <p>${price}</p>
+              <p>£{price}</p>
+
+              {/* Lower or raise quantity: */}
+              <button
+                onClick={() => updateQuantity(product.id, product.quantity - 1)}
+              >
+                -
+              </button>
+
+              <p>Quantity: {product.quantity}</p>
 
               <button
-                onClick={() =>
-                  setCart((prev) =>
-                    prev.filter((item) => item.id !== product.id),
-                  )
-                }
+                onClick={() => updateQuantity(product.id, product.quantity + 1)}
               >
+                +
+              </button>
+
+              <br />
+
+              <button onClick={() => removeFromCart(product.id)}>
                 Remove from Cart
               </button>
             </li>
@@ -37,7 +51,10 @@ const Cart: React.FC<CartProps> = ({ cart, setCart }) => {
         })}
       </ul>
 
-      <button onClick={() => setCart([])}>Clear Cart</button>
+      <h4>Cart Total</h4>
+      <p>£{cartTotal}</p>
+
+      <button onClick={() => clearCart()}>Clear Cart</button>
     </div>
   );
 };
